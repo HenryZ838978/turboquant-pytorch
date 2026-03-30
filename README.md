@@ -14,6 +14,22 @@ A PyTorch implementation of [TurboQuant](https://arxiv.org/abs/2504.19874) (Goog
 
 ---
 
+## TL;DR — 给圈外人的一句话
+
+大模型聊天时，GPU 显存里有两样东西：**模型本身**和**对话记忆（KV Cache）**。模型装完后，剩下的空间全给对话记忆——它决定了你能同时服务多少用户、每个用户能聊多长。
+
+TurboQuant 把对话记忆**压缩到原来的 1/5**，而模型回答的质量**完全不变**（注意力分布余弦相似度 99.5%）。
+
+直接结果：
+
+- **同一块 RTX 4090**：能同时服务的用户数从 56 → 93（**+66%**）
+- **便宜一档的 RTX 4080**：加上 TurboQuant 后，能做到和 4090 不压缩时一样的并发量
+- 每个用户能塞进去的 **RAG 文档数** 也多了 67%
+
+> 一句话：**不是让模型跑更快，而是让同一块显卡能接待更多客人。**
+
+---
+
 ## The Problem
 
 When an LLM generates text, it caches **key** and **value** vectors for every token, in every layer. This **KV cache** is the model's working memory — and on most GPUs, it's the bottleneck.
