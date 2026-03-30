@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 340" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="a1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+    <linearGradient id="a2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+    <linearGradient id="a3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+    <linearGradient id="a4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker>
+    <filter id="sh2"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/></filter>
+  </defs>
+
+  <rect width="820" height="340" rx="16" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="410" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#1e293b">How TurboQuant Compresses a Key Vector</text>
+
+  <!-- === INPUT === -->
+  <rect x="20" y="60" width="120" height="50" rx="10" fill="url(#a1)" filter="url(#sh2)"/>
+  <text x="80" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="white">Key Vector</text>
+  <text x="80" y="98" text-anchor="middle" font-size="10" fill="#e0e7ff">k ∈ ℝ¹²⁸</text>
+
+  <!-- Arrow 1 -->
+  <line x1="140" y1="85" x2="170" y2="85" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- === STAGE 1 BOX === -->
+  <rect x="175" y="52" width="290" height="138" rx="12" fill="white" stroke="#c7d2fe" stroke-width="1.5" filter="url(#sh2)"/>
+  <rect x="175" y="52" width="290" height="26" rx="12 12 0 0" fill="#eef2ff"/>
+  <text x="320" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="#4f46e5">STAGE 1 — MSE-Optimal (2 bits/coord)</text>
+
+  <!-- Step 1: Rotate -->
+  <rect x="195" y="90" width="110" height="36" rx="8" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
+  <text x="250" y="105" text-anchor="middle" font-size="10" font-weight="600" fill="#0369a1">Random Rotate</text>
+  <text x="250" y="118" text-anchor="middle" font-size="9" fill="#64748b">Π · (k / ‖k‖)</text>
+
+  <line x1="305" y1="108" x2="325" y2="108" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Step 2: Quantize -->
+  <rect x="330" y="90" width="118" height="36" rx="8" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1"/>
+  <text x="389" y="105" text-anchor="middle" font-size="10" font-weight="600" fill="#0369a1">Lloyd-Max</text>
+  <text x="389" y="118" text-anchor="middle" font-size="9" fill="#64748b">Optimal Quantize</text>
+
+  <!-- Output: k_mse -->
+  <line x1="389" y1="126" x2="389" y2="150" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="335" y="153" width="105" height="28" rx="6" fill="url(#a2)" filter="url(#sh2)"/>
+  <text x="388" y="172" text-anchor="middle" font-size="11" font-weight="600" fill="white">k_mse</text>
+
+  <!-- Arrow to output -->
+  <line x1="465" y1="140" x2="530" y2="140" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- === STAGE 2 BOX === -->
+  <rect x="175" y="200" width="290" height="120" rx="12" fill="white" stroke="#fed7aa" stroke-width="1.5" filter="url(#sh2)"/>
+  <rect x="175" y="200" width="290" height="26" rx="12 12 0 0" fill="#fff7ed"/>
+  <text x="320" y="218" text-anchor="middle" font-size="11" font-weight="700" fill="#c2410c">STAGE 2 — QJL Correction (1 bit/coord)</text>
+
+  <!-- Residual -->
+  <rect x="195" y="238" width="100" height="36" rx="8" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/>
+  <text x="245" y="253" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">Residual</text>
+  <text x="245" y="266" text-anchor="middle" font-size="9" fill="#64748b">r = k − k_mse</text>
+
+  <line x1="295" y1="256" x2="325" y2="256" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Sign -->
+  <rect x="330" y="238" width="118" height="36" rx="8" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/>
+  <text x="389" y="253" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">Project + Sign</text>
+  <text x="389" y="266" text-anchor="middle" font-size="9" fill="#64748b">sign(S · r) → ±1</text>
+
+  <!-- Output: signs + norm -->
+  <line x1="389" y1="274" x2="389" y2="296" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="325" y="298" width="128" height="28" rx="6" fill="url(#a3)" filter="url(#sh2)"/>
+  <text x="389" y="317" text-anchor="middle" font-size="11" font-weight="600" fill="white">signs + ‖r‖</text>
+
+  <!-- Arrow from Stage 2 to output -->
+  <line x1="465" y1="280" x2="530" y2="280" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- === COMBINED OUTPUT === -->
+  <rect x="540" y="100" width="260" height="220" rx="14" fill="white" stroke="#bbf7d0" stroke-width="2" filter="url(#sh2)"/>
+  <rect x="540" y="100" width="260" height="30" rx="14 14 0 0" fill="#ecfdf5"/>
+  <text x="670" y="121" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">Asymmetric Attention</text>
+
+  <!-- Formula -->
+  <text x="670" y="155" text-anchor="middle" font-size="11" font-weight="600" fill="#1e293b">⟨q, k⟩ ≈</text>
+  <rect x="562" y="168" width="216" height="28" rx="6" fill="#f0f9ff"/>
+  <text x="670" y="187" text-anchor="middle" font-size="11" fill="#0369a1">⟨q, k_mse⟩</text>
+  <text x="670" y="210" text-anchor="middle" font-size="14" font-weight="600" fill="#64748b">+</text>
+  <rect x="562" y="218" width="216" height="28" rx="6" fill="#fff7ed"/>
+  <text x="670" y="237" text-anchor="middle" font-size="11" fill="#c2410c">‖r‖ · √(π/2)/m · ⟨Sq, signs⟩</text>
+
+  <!-- Key insight -->
+  <rect x="562" y="265" width="216" height="40" rx="8" fill="#f0fdf4"/>
+  <text x="670" y="282" text-anchor="middle" font-size="10" font-weight="600" fill="#047857">No decompression needed!</text>
+  <text x="670" y="296" text-anchor="middle" font-size="10" fill="#059669">Score computed directly</text>
+
+  <!-- Connecting lines from input to Stage 2 -->
+  <path d="M80,110 L80,258 L175,258" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+</svg>
