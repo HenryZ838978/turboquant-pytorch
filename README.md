@@ -90,22 +90,41 @@ Validated on Qwen2.5-3B-Instruct (36 layers, 72 layer-head pairs) and MiniCPM4.1
 
 | Metric | FP16 | TQ-3bit | Gain |
 |--------|------|---------|------|
+| KV cost per token | 32 KB | 19.3 KB | **-40%** |
 | Max KV tokens (7 GB budget) | 224K | 373K | **+66%** |
-| Concurrent sessions @ 4K ctx | 56 | 93 | **+66%** |
-| Concurrent sessions @ 8K ctx | 28 | 46 | **+64%** |
-| RAG docs per session (base 2K + N×1K docs) | 222 | 371 | **+67%** |
+
+### Conversation capacity (1 turn ≈ 400 tokens)
+
+A typical dialogue turn: user input ~100 tokens + model response ~300 tokens ≈ **400 tokens, 12.5 MB FP16 KV**.
+
+| | FP16 | TQ-3bit | Gain |
+|---|---|---|---|
+| **Max conversation turns stored** | **573 turns** | **953 turns** | **+380 turns** |
+| KV cost per turn | 12.5 MB | 7.5 MB | -40% |
+
+In real serving scenarios (multiple users, each with their own KV cache):
+
+| Scenario | FP16 | TQ-3bit | Extra |
+|----------|------|---------|-------|
+| Customer service (10 turns/user) | 57 users | **95 users** | +38 |
+| RAG Q&A (2K dialogue + 5×500-token docs) | 52 users | **86 users** | +34 |
+| Long conversation (30 turns/user) | 19 users | **31 users** | +12 |
+| Max single-session turns | 573 turns | **953 turns** | +380 |
 
 ### Cheaper GPU, same capacity
 
 TQ-3bit needs only **60%** of the original KV memory for the same workload:
 
-| Setup | GPU | Model | KV Budget | Sessions @ 4K |
+| Setup | GPU | Model | KV Budget | Users @ 4K ctx |
 |-------|-----|-------|-----------|----------------|
 | Baseline | RTX 4090 (24GB) | INT8 8GB | 15 GB FP16 | 120 |
 | **TQ on 4080** | **RTX 4080 (16GB)** | **INT8 8GB** | **7 GB → 11.6 eff** | **93** |
 | TQ on 4090 | RTX 4090 (24GB) | INT8 8GB | 15 GB → 24.9 eff | 200 |
 
-> **The takeaway**: "can load the model" ≠ "can serve users." The GPU that could only fit the weights can now also run a real workload. An RTX 4080 + TQ-3bit serves 93 concurrent conversations — the same order of magnitude as an RTX 4090 with FP16.
+> **The takeaway**: "can load the model" ≠ "can serve users."  
+> Before TQ: 7 GB KV = 573 turns of conversation memory.  
+> After TQ: same 7 GB = **953 turns** — nearly double.  
+> An RTX 4080 + TQ-3bit serves 93 concurrent users, matching RTX 4090 FP16.
 
 ---
 
